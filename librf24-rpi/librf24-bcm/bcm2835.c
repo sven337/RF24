@@ -667,14 +667,18 @@ uint8_t bcm2835_spi_transfer(uint8_t value)
 
     // Maybe wait for TXD
     while (!(bcm2835_peri_read(paddr) & BCM2835_SPI0_CS_TXD))
-	delayMicroseconds(10);
+		{
+		//delayMicroseconds(10);
+		}
 
     // Write to FIFO, no barrier
     bcm2835_peri_write_nb(fifo, value);
 
     // Wait for DONE to be set
     while (!(bcm2835_peri_read_nb(paddr) & BCM2835_SPI0_CS_DONE))
-	delayMicroseconds(10);
+		{
+		//delayMicroseconds(10);
+		}
 
     // Read any byte that was sent back by the slave while we sere sending to it
     uint32_t ret = bcm2835_peri_read_nb(fifo);
@@ -712,21 +716,27 @@ void bcm2835_spi_transfernb(char* tbuf, char* rbuf, uint32_t len)
     {
 	// Maybe wait for TXD
 	while (!(bcm2835_peri_read(paddr) & BCM2835_SPI0_CS_TXD))
-	    delayMicroseconds(10);
+		{
+		//delayMicroseconds(10);
+		}
 
 	// Write to FIFO, no barrier
 	bcm2835_peri_write_nb(fifo, tbuf[i]);
 
 	// Wait for RXD
 	while (!(bcm2835_peri_read(paddr) & BCM2835_SPI0_CS_RXD))
-	    delayMicroseconds(10);
+		{
+		//delayMicroseconds(10);
+		}
 
 	// then read the data byte
 	rbuf[i] = bcm2835_peri_read_nb(fifo);
     }
     // Wait for DONE to be set
     while (!(bcm2835_peri_read_nb(paddr) & BCM2835_SPI0_CS_DONE))
-	delayMicroseconds(10);
+		{
+		//delayMicroseconds(10);
+		}
 
     // Set TA = 0, and also set the barrier
     bcm2835_peri_set_bits(paddr, 0, BCM2835_SPI0_CS_TA);
