@@ -38,19 +38,19 @@ http://hallard.me/arduipi
 
 So on example file the instance is created as follow, change the pins according your connections
 
-// Setup for GPIO 22 CE and CE1 CSN with SPI Speed @ 4Mhz
-RF24 radio(RPI_V2_GPIO_P1_15, RPI_V2_GPIO_P1_26, BCM2835_SPI_SPEED_4MHZ);  
+// Setup for GPIO 22 CE and CE1 CSN with SPI Speed @ 4Mhz 
+RF24 radio(RPI_V2_GPIO_P1_15, RPI_V2_GPIO_P1_26, BCM2835_SPI_SPEED_4MHZ);   
 
 
 Pin on ArduiPi board are
-NRF24L01    RPI       P1 Connector
-nrf-vcc  = rpi-3v3        (01)
-nrf-gnd  = rpi-gnd        (06)
-nrf-ce   = rpi-ce1        (26)
-nrf-csn  = rpi-gpio22     (15)
-nrf-sck  = rpi-sckl       (23)
-nrf-mo   = rpi-mosi       (19)
-nrf-mi   = rpi-miso       (21)
+NRF24L01    RPI       P1 Connector 
+nrf-vcc  = rpi-3v3        (01) 
+nrf-gnd  = rpi-gnd        (06) 
+nrf-ce   = rpi-ce1        (26) 
+nrf-csn  = rpi-gpio22     (15) 
+nrf-sck  = rpi-sckl       (23) 
+nrf-mo   = rpi-mosi       (19) 
+nrf-mi   = rpi-miso       (21) 
 
 known issues
 ============
