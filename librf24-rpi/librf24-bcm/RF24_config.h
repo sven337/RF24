@@ -30,5 +30,11 @@
 #define pgm_read_word(p) (*(p))
 #define pgm_read_byte(p) (*(p))
 
+#define DEBUG_LEVEL_NONE		0
+#define DEBUG_LEVEL_INFO 		1
+#define DEBUG_LEVEL_WARNING 2
+#define DEBUG_LEVEL_ERROR		3
+#define DEBUG_LEVEL_FULL		4
+
 #endif // __RF24_CONFIG_H__
 // vim:ai:cin:sts=2 sw=2 ft=cpp
