@@ -27,7 +27,7 @@
 // Set up nRF24L01 radio on SPI bus plus pins 9 & 10
 
 //RF24 radio(9,10);
-RF24 radio("/dev/spidev0.0",8000000 , 25);  //spi device, speed and CE,only CE is NEEDED in RPI
+RF24 radio("/dev/spidev0.0",8000000 , 18);  //spi device, speed and CE,only CE is NEEDED in RPI
 
 
 // sets the role of this unit in hardware.  Connect to GND to be the 'pong' receiver
@@ -39,7 +39,7 @@ const int role_pin = 7;
 //
 
 // Radio pipe addresses for the 2 nodes to communicate.
-const uint64_t pipes[2] = { 0xF0F0F0F0E1LL, 0xF0F0F0F0D2LL };
+const uint64_t pipes[2] = { 0xF0F0F0F0F0LL, 0xF0F0F0F0F1LL };
 
 //
 // Role management
@@ -97,9 +97,11 @@ void setup(void)
 
   // optionally, reduce the payload size.  seems to
   // improve reliability
-//  radio.setPayloadSize(8);
- radio.setChannel(0x4c);
-     radio.setPALevel(RF24_PA_LOW);
+  radio.setPayloadSize(2);
+// radio.setChannel(0x4c);
+     radio.setPALevel(RF24_PA_MAX);
+	 radio.setDataRate(RF24_250KBPS);
+	 radio.setAutoAck(false);
 
   //
   // Open pipes to other nodes for communication
@@ -209,17 +211,14 @@ sleep(1);
         // Spew it
         printf("Got payload %lu...",got_time);
 
-	// Delay just a little bit to let the other unit
-	// make the transition to receiver
-	delay(20);
       }
 
       // First, stop listening so we can talk
       radio.stopListening();
 
       // Send the final one back.
-      printf("Sent response.\n\r");
-      radio.write( &got_time, sizeof(unsigned long) );
+      int res = radio.write( &got_time, sizeof(unsigned long) );
+      printf("Sent response: %d.\n\r", res);
 
       // Now, resume listening so we catch the next packets.
       radio.startListening();

@@ -151,20 +151,6 @@ protected:
   uint8_t read_payload(void* buf, uint8_t len);
 
   /**
-   * Empty the receive buffer
-   *
-   * @return Current value of status register
-   */
-  uint8_t flush_rx(void);
-
-  /**
-   * Empty the transmit buffer
-   *
-   * @return Current value of status register
-   */
-  uint8_t flush_tx(void);
-
-  /**
    * Retrieve the current status of the chip
    *
    * @return Current value of status register
@@ -651,6 +637,20 @@ public:
    */
   bool testRPD(void) ;
 
+
+  /**
+   * Empty the receive buffer
+   *
+   * @return Current value of status register
+   */
+  uint8_t flush_rx(void);
+
+  /**
+   * Empty the transmit buffer
+   *
+   * @return Current value of status register
+   */
+  uint8_t flush_tx(void);
   /**@}*/
 };
 

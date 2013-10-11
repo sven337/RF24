@@ -36,8 +36,8 @@ using namespace std;
 // Radio pipe addresses for the 2 nodes to communicate.
 // First pipe is for writing, 2nd, 3rd, 4th, 5th & 6th is for reading...
 const uint64_t pipes[6] = 
-					{ 0xF0F0F0F0D2LL, 0xF0F0F0F0E1LL, 
-						0xF0F0F0F0E2LL, 0xF0F0F0F0E3LL, 
+					{ 0xF0F0F0F0D2LL, 0xF0F0F0F0F0LL, 
+						0xF0F0F0F0F1LL, 0xF0F0F0F0E3LL, 
 						0xF0F0F0F0F1, 0xF0F0F0F0F2 
 					};
 
@@ -47,10 +47,10 @@ const uint64_t pipes[6] =
 //RF24 radio(RPI_V2_GPIO_P1_22, RPI_V2_GPIO_P1_18, BCM2835_SPI_SPEED_1MHZ);
 
 // Setup for GPIO 22 CE and CE0 CSN with SPI Speed @ 4Mhz
-//RF24 radio(RPI_V2_GPIO_P1_15, BCM2835_SPI_CS0, BCM2835_SPI_SPEED_4MHZ); 
+RF24 radio(RPI_V2_GPIO_P1_12, BCM2835_SPI_CS0, BCM2835_SPI_SPEED_1MHZ); 
 
 // Setup for GPIO 22 CE and CE1 CSN with SPI Speed @ 8Mhz
-RF24 radio(RPI_V2_GPIO_P1_15, RPI_V2_GPIO_P1_26, BCM2835_SPI_SPEED_8MHZ);  
+//RF24 radio(RPI_V2_GPIO_P1_15, RPI_V2_GPIO_P1_26, BCM2835_SPI_SPEED_8MHZ);  
 
 
 int main(int argc, char** argv) 

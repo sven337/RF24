@@ -31,7 +31,7 @@ using namespace std;
 
 // CE and CSN pins 
 //RF24 radio(8, 25);  //only CSN is NEEDED in RPI
-RF24 radio("/dev/spidev0.0",8000000 , 25);  //spi device, speed and CSN,only CSN is NEEDED in RPI
+RF24 radio("/dev/spidev0.0",4000000 , 18);  //spi device, speed and CSN,only CSN is NEEDED in RPI
 
 //
 // Channel info
@@ -61,6 +61,12 @@ void setup(void)
 
   radio.begin();
   radio.setAutoAck(false);
+//	radio.enableDynamicPayloads();
+	radio.setPayloadSize(2);
+	radio.setDataRate(RF24_250KBPS);
+	radio.setPALevel(RF24_PA_MAX);
+//	radio.setChannel(76);
+	radio.setCRCLength(RF24_CRC_16);
 
   // Get into standby mode
   radio.startListening();
@@ -154,7 +160,7 @@ if ( reset_array == 1 ) {
 
       // Listen for a little
       radio.startListening();
-      delayMicroseconds(128);
+      delayMicroseconds(200);
       radio.stopListening();
 
       // Did we get a carrier?
