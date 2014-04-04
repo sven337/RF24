@@ -1,24 +1,14 @@
-/* 
+/*
  *
- *  Filename : rpi-hub.cpp
+ *  Filename : sendto_hub.cpp
  *
- *  This program makes the RPi as a hub listening to all six pipes from the remote sensor nodes ( usually Arduino )
- *  and will return the packet back to the sensor on pipe0 so that the sender can calculate the round trip delays
- *  when the payload matches.
- *  
- *  I encounter that at times, it also receive from pipe7 ( or pipe0 ) with content of FFFFFFFFF that I will not sent
- *  back to the sender
+ * This is the client for rpi-hub.cpp or use the RPi as a client to an Arduino as a hub
+ * The first address in the pipe is for writing and the second address is for reading
  *
- *  Refer to RF24/examples/rpi_hub_arduino/ for the corresponding Arduino sketches to work with this code.
- * 
- *  
- *  CE is not used and CSN is GPIO25 (not pinout)
- *
- *  Refer to RPi docs for GPIO numbers
  *
  *  Author : Stanley Seow
  *  e-mail : stanleyseow@gmail.com
- *  date   : 6th Mar 2013
+ *  date   : 4th Apr 2013
  *
  * 03/17/2013 : Charles-Henri Hallard (http://hallard.me)
  *              Modified to use with Arduipi board http://hallard.me/arduipi
@@ -82,12 +72,19 @@ int kbhit(void)
 
 int main(void)
 {
+  // Get the last byte as node-id
+  uint8_t nodeID = *((uint8_t *) &pipe_0);
 	char receivePayload[32+1];
-	char hexbuff[64+1];
 	char asciibuff[32+1];
-	uint8_t pipe = 0;
-		
-  printf("rpi-hub/\nPress any key to exit\n");
+  int counter,Data1,Data2,Data3,Data4 ;
+  int timeout;
+
+  counter=Data1=Data2=Data3=Data4=0;
+	
+	// Calculate time taken by a request
+	struct timespec requestStart, requestEnd;
+	
+  printf("\nsendto_hub/\nPress any key to exit\n");
 
   // Setup and configure rf radio, no Debug Info
   radio.begin(DEBUG_LEVEL_NONE);
@@ -124,91 +121,90 @@ int main(void)
   radio.setCRCLength( RF24_CRC_8 ) ;
 
 	// Open 6 pipes for readings ( 5 plus pipe0, also can be used for reading )
-	// Revert pipe 0 and pipe 1 to be able to receive packet from pingtest
-	radio.openWritingPipe(  pipe_1);
-	radio.openReadingPipe(1,pipe_0);
+	radio.openWritingPipe(  pipe_0);
+	radio.openReadingPipe(1,pipe_1);
 	radio.openReadingPipe(2,pipe_2);
 	radio.openReadingPipe(3,pipe_3);
 	radio.openReadingPipe(4,pipe_4);
 	radio.openReadingPipe(5,pipe_b);
 
-	// Ok ready to listen
-	radio.startListening();
-	
   // display configuration of the rf
   radio.printDetails();
 	
 	// loop until key pressed
 	while ( !kbhit() )
 	{
-		// Display it on screen
-		//printf("Listening\n");
+    // Get readings from sensors, change codes below to read sensors
+    Data1 = counter++;
+    Data2 = rand() % 1000;
+    Data3 = rand() % 1000;
+    Data4 = rand() % 1000;
+    
+    if ( counter > 999 ) 
+			counter = 0;
 
-		while ( radio.available( &pipe ) ) 
+    // Append the hex nodeID to the beginning of the payload    
+    // Convert int to strings and number smaller than 3 digits to 000 to 999
+    sprintf(asciibuff,"%02X,%03d,%03d,%03d,%03d",nodeID, Data1, Data2, Data3, Data4);
+       
+    printf("Now sending[%02d] %s..", strlen(asciibuff), asciibuff );
+    
+		// get clock start value to calculate round trip time
+		clock_gettime(CLOCK_REALTIME, &requestStart);
+    
+    // Send to hub
+    if ( !radio.write( asciibuff, strlen(asciibuff)) ) 
 		{
-			// be sure all is fine 
-			// usleep(5000);
-			
-			// Get packet payload size
-			uint8_t len = radio.getDynamicPayloadSize();
-			uint8_t i;
-			char c;
-			
-			// Avoid buffer overflow
-			if (len > 32)
-				len = 32;
-			
-			// Read data received
-			radio.read( receivePayload, len );
+       printf(".Failed\n");
+    }
+    else 
+		{
+       printf(".Ok...."); 
 
-			// Prepare display in HEX and ASCII format of payload
-			for (i=0 ; i<len; i++ )
-			{
-				c = receivePayload[i];
-				sprintf(&hexbuff[i*2], "%02X", c);
-				asciibuff[i] = isprint(c) ? c: '.';
-			}
-
-			// end our strings
-			asciibuff[i] = hexbuff[i*2] = '\0';
-			
-			// Display it on screen
-			printf("Recv[%02d] from pipe %i : payload=0x%s -> %s",len, pipe, hexbuff, asciibuff);
-				
-			// Send back payload to sender
-			radio.stopListening();
-
-			// if pipe is 7, do not send it back
-			if ( pipe != 7 ) 
-			{
-				// Send back using the same pipe
-				// radio.openWritingPipe(pipes[pipe]);
-				radio.write(receivePayload,len);
-
-				receivePayload[len]=0;
-				printf("\t Sent back %d bytes to pipe %d\n\r", len, pipe);
-			}
-			else 
-			{
-				printf("\n\r");
-			}
-
-			// Enable start listening again
+			 // Ok listen for the response
 			radio.startListening();
 
-			// Increase the pipe outside the while loop
-			pipe++;
-			
-			// reset pipe to 0
-			if ( pipe > 5 ) 
-				pipe = 0;
-		}
+			timeout = 250; /* 250 ms */
 
-		// May be a good idea not using all CPU into the loop
-		usleep(1000);
-	}
+			// Wait here until we get a response, or timeout 
+			while ( !radio.available() && timeout-- > 0)
+				usleep(1000);
+
+			// Ok so why we are there ?
+			if ( timeout <= 0 )
+			{
+				printf("Failed, response timed out.\n");
+			}
+			else
+			{
+				// get clock value to calculate round trip time
+				clock_gettime(CLOCK_REALTIME, &requestEnd);
+
+				// Calculate time it took to receive response (in second)
+				double roundtrip = ( requestEnd.tv_sec - requestStart.tv_sec ) + ( requestEnd.tv_nsec - requestStart.tv_nsec ) / 1E9L;
+
+				// Get payload size
+				uint8_t len = radio.getDynamicPayloadSize();
+
+				// Read payload 
+				radio.read( receivePayload, len); 
+
+				// convert to string (should be ok, we sent a string)
+				receivePayload[len] = 0;
+				
+				// Display results
+				printf("Got response[%d] %s round-trip delay: %d ms\n",len, strcmp(asciibuff, receivePayload) ? "NO match !":"OK matched", (int) (roundtrip * 1000) );
+			} 
+			
+			// Ready to send next paylaod
+			radio.stopListening();    
+		}
+     
+    usleep(250000);
+		
+	} // While not kbhit()
 	
-	return 0 ;
+	return 0;
 }
 
 

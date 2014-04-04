@@ -17,7 +17,7 @@ Setup
 
 Known issues
 ============
-- the current bcm2835 drivers still have some minor bugs/errors, if you have errors, use the GPIO version
+- None
 
 
 Links 

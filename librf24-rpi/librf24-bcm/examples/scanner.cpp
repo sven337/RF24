@@ -25,7 +25,7 @@
 
 #include <cstdlib>
 #include <iostream>
-#include "./RF24.h"
+#include "../RF24.h"
 
 using namespace std;
 
@@ -65,12 +65,12 @@ int main(int argc, char** argv)
 
   //Serial.begin(57600);
   //printf_begin();
-  printf("RF24/examples/scanner/\n");
+  printf("scanner/\n");
 
   //
   // Setup and configure rf radio
   //
-  radio.begin();
+  radio.begin(DEBUG_LEVEL_NONE);
 	
   radio.setAutoAck(false);
 

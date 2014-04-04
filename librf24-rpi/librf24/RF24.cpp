@@ -320,7 +320,8 @@ void RF24::printDetails(void)
 
   printf_P(PSTR("SPI device\t = %s\r\n"),spidevice.c_str() );
   printf_P(PSTR("SPI speed\t = %d\r\n"),spispeed);
-  printf_P(PSTR("CE GPIO\t = %d\r\n"),ce_pin);
+  printf_P(PSTR("CE  GPIO\t = %d\r\n"),ce_pin);
+  printf_P(PSTR("CSN GPIO\t = %d\r\n"),csn_pin);
 	
   print_status(get_status());
 
@@ -350,7 +351,7 @@ void RF24::begin(void)
   pinMode(ce_pin,OUTPUT);
 
 if ( spidevice == "/dev/spidev0.1" ) {
-	csn_pin=9;
+	csn_pin=7;
 } else {
 	csn_pin=8;
 }

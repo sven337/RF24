@@ -46,9 +46,8 @@ clean:
 
 # Install the library to LIBPATH
 install: 
-	@echo "[Install]"
+	@echo "[Installing Library]"
 	@if ( test ! -d $(PREFIX)/lib ) ; then mkdir -p $(PREFIX)/lib ; fi
-	#@install -m 0755 ${LIB}.a ${LIBDIR}
 	@install -m 0755 ${LIBNAME} ${LIBDIR}
 	@ln -sf ${LIBDIR}/${LIBNAME} ${LIBDIR}/${LIB}.so.1
 	@ln -sf ${LIBDIR}/${LIBNAME} ${LIBDIR}/${LIB}.so

@@ -236,7 +236,7 @@ public:
    *
    * Call this in setup(), before calling any other methods.
    */
-  bool begin(void);
+  bool begin(uint8_t debuglevel);
 
   /**
    * Start listening on the pipes opened for reading.
@@ -361,6 +361,17 @@ public:
    */
   void setRetries(uint8_t delay, uint8_t count);
 
+	
+  /**@{*/
+  /**
+   * Get delay and count values of the radio
+   *
+   * @param high and low nibbles of delay and count as currently configured on
+   * the radio. Valid ranges for both nibbles are 0x00-0x0f. The delay nibble
+   * translates as 0=250us, 15=4000us, in bit multiples of 250us.
+   */
+  uint8_t getRetries( void ) ;
+	
   /**
    * Set RF communication channel
    *
@@ -631,6 +642,15 @@ public:
    */
   bool testRPD(void) ;
 
+  /**
+   * Calculate the maximum timeout in us based on current hardware
+   * configuration.
+   *
+   * @return us of maximum timeout; accounting for retries
+   */
+  uint16_t getMaxTimeout(void) ;
+
+	
   /**@}*/
 };
 

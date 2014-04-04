@@ -112,7 +112,7 @@ uint8_t SPI::transfer(uint8_t tx_)
 	tr.rx_buf = (unsigned long)rx;
 	tr.len = ARRAY_SIZE(tx);
 	tr.delay_usecs = 0;
-//	tr.cs_change = 1;
+	tr.cs_change = 0;
 	tr.speed_hz = this->speed;
 	tr.bits_per_word = this->bits;
 
