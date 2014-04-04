@@ -236,7 +236,7 @@ public:
    *
    * Call this in setup(), before calling any other methods.
    */
-  bool begin(uint8_t debuglevel);
+  bool begin(uint8_t debuglevel = 0);
 
   /**
    * Start listening on the pipes opened for reading.
