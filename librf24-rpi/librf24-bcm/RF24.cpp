@@ -506,6 +506,13 @@ bool RF24::begin(uint8_t debuglevel)
   flush_rx();
   flush_tx();
 	
+  
+  powerUp();
+
+  // Enable PTX, do not write CE high so radio will remain in standby I mode ( 130us max to transition to RX or TX instead of 1500us from powerUp )
+  // PTX should use only 22uA of power
+  write_register(CONFIG, ( read_register(CONFIG) ) & ~_BV(PRIM_RX) );
+
 	return true;
 }
 
